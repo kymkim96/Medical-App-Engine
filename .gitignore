@@ -1,0 +1,8 @@
+#git
+.idea
+
+#packages
+node_modules
+
+#environment
+.env
