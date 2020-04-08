@@ -1,10 +1,11 @@
 {
-  "name": "nodebird",
+  "name": "Medical-App-Engine",
   "version": "1.0.0",
-  "description": "익스프레스로 만드는 SNS 서비스",
-  "main": "app.js",
+  "description": "Medical-app 웹 애플리케이션 서버",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "node index",
+    "dev": "nodemon --watch './spec' index"
   },
   "keywords": [],
   "author": "sigyung",
