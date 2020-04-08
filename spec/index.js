@@ -8,7 +8,7 @@ require('dotenv').config();
 // const passportConfig = require('./spec/passport');
 const path = require('path');
 
-const router = require('./spec/router');
+const router = require('./router');
 
 const app = express();
 // sequelize.sync();
@@ -49,5 +49,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(app.get('port'), () => {
-    console.log(app.get('port'), '번 포트에서 대기 중');
+    console.log(`connect to http://localhost:${app.get('port')}`);
 });

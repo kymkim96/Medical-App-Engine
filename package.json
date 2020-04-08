@@ -4,8 +4,8 @@
   "description": "Medical-app 웹 애플리케이션 서버",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon --watch './spec' index"
+    "start": "node ./spec/index",
+    "dev": "nodemon ./spec/index"
   },
   "keywords": [],
   "author": "sigyung",
