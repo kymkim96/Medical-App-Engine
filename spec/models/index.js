@@ -15,10 +15,10 @@ db.Diseases = require('./diseases')(sequelize, Sequelize);
 db.Symptoms = require('./symptoms')(sequelize, Sequelize);
 
 // TODO: 릴레이션도 만들어주시면 감사합니당
-db.Subjects.hasMany(db.Diseases, { foreignKey: 'subject', sourceKey: 'id'});
-db.Diseases.belongsTo(db.Subjects, { foreignKey: 'subject', sourceKey: 'id'});
+db.Subjects.belongsToMany(db.Diseases, { through: 'Treatment'});
+db.Diseases.belongsToMany(db.Subjects, { through: 'Treatment'});
 
-db.Diseases.belongsToMany(db.Symptoms, { through: 'Takes'});
-db.Symptoms.belongsToMany(db.Diseases, { through: 'Takes'});
+db.Diseases.belongsToMany(db.Symptoms, { through: 'Take'});
+db.Symptoms.belongsToMany(db.Diseases, { through: 'Take'});
 
 module.exports = db;
