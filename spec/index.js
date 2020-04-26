@@ -3,18 +3,22 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const session = require('express-session');
 require('dotenv').config();
-// const { sequelize } = require('./spec/models');
+const { sequelize } = require('./models');
 // const passport = require('passport');
-// const passportConfig = require('./spec/passport');
+// const passportConfig = require('./passport');
 const path = require('path');
+const swaggerUI = require('swagger-ui-express');
+const spec = require('../swaggerUI');
 
 const router = require('./router');
 
 const app = express();
-// sequelize.sync();
+sequelize.sync();
 // passportConfig(passport);
 
 app.set('port', process.env.PORT || 8010);
+
+app.use('/swagger', swaggerUI.serve, swaggerUI.setup(spec));
 
 // app.use('/file', express.static(path.join(__dirname, 'uploads')));
 

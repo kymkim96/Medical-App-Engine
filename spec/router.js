@@ -1,6 +1,8 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ prefix: 'v1'});
 const axios = require('axios');
+const { diseaseList, disease } = require('./controllers/DiseaseController');
+const { symptomList } = require('./controllers/SyptomController');
 
 router.get('/', (req, res) => {
     res.json({ message: 'Home' });
@@ -19,5 +21,10 @@ router.get('/api', async (req, res) => {
         return;
     }
 });
+
+router.get('/symptoms', symptomList);
+
+router.get('/diseases', diseaseList);
+router.get('/disease', disease);
 
 module.exports = router;
