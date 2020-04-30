@@ -10,7 +10,7 @@ const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const spec = require('../swaggerUI');
 
-const router = require('./router');
+const router = require('./route');
 
 const app = express();
 sequelize.sync();
