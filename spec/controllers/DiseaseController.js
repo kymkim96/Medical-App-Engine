@@ -49,12 +49,14 @@ exports.register = async (req, res, next) => {
     const disease = await Diseases.create({
       ...req.body,
     });
+    /* 질병 증상 관계 설정 부분
     const symptoms = await Symptoms.findAll({
         where: {
             id: [1, 2, 3, 5],
         },
     });
     disease.addSymptoms(symptoms);
+    */
 
     res.json(disease);
   } catch (error) {
