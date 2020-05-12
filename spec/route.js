@@ -1,7 +1,7 @@
 const express = require('express');
 const route = express.Router({ prefix: 'v1'});
 const axios = require('axios');
-const spec = require('../swaggerUI')
+const spec = require('../swaggerUI');
 const DiseaseController = require('./controllers/DiseaseController');
 const SymptomController = require('./controllers/SyptomController');
 
@@ -27,7 +27,8 @@ route.get('/spec', );
 route.get('/symptom', SymptomController.list);
 route.post('/symptom', SymptomController.create);
 
-route.get('/disease', DiseaseController.disease);
+route.get('/disease', DiseaseController.list);
+route.get('/disease/:id', DiseaseController.read)
 route.post('/disease', DiseaseController.register);
 route.post('/disease/symptom', DiseaseController.symptomRef);
 

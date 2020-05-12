@@ -1,7 +1,8 @@
 require("dotenv").config();
 const _ = require("lodash");
 const axios = require("axios");
-const { Diseases, Symptoms } = require("../models");
+const { Op } = require('sequelize');
+const { Disease, Symptom } = require("../models");
 
 /**
  * @swagger
@@ -35,9 +36,24 @@ const { Diseases, Symptoms } = require("../models");
 
 // 질병 상세정보 입력 - 질병 테이블 입력
 exports.register = async (req, res, next) => {
-  const { code } = req.body;
+  const { code, name } = req.body;
   try {
-    const exDisease = await Diseases.findOne({ where: { code } });
+    // 폼 검증
+    if (!code) {
+      res.status(400).json({
+        message: "code는 비어있어선 안됩니다.",
+      });
+      return;
+    }
+
+    if (!name) {
+      res.status(400).json({
+        message: "name은 비어있어선 안됩니다.",
+      });
+      return;
+    }
+
+    const exDisease = await Disease.findOne({ where: { code, name } });
 
     if (exDisease) {
       res.status(400).json({
@@ -46,17 +62,9 @@ exports.register = async (req, res, next) => {
       return;
     }
 
-    const disease = await Diseases.create({
+    const disease = await Disease.create({
       ...req.body,
     });
-    /* 질병 증상 관계 설정 부분
-    const symptoms = await Symptoms.findAll({
-        where: {
-            id: [1, 2, 3, 5],
-        },
-    });
-    disease.addSymptoms(symptoms);
-    */
 
     res.json(disease);
   } catch (error) {
@@ -65,19 +73,19 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.disease = async (req, res, next) => {
+exports.read = async (req, res, next) => {
   const { disease_id } = req.query;
 
   try {
     if (disease_id) {
       // 질병 상세정보 출력
-      const disease = await Diseases.findOne({
-          where: {
-              id: disease_id
-          },
-          include: {
-              model: Symptoms
-          }
+      const disease = await Disease.findOne({
+        where: {
+          id: disease_id,
+        },
+        include: {
+          model: Symptom,
+        },
       });
 
       if (!disease) {
@@ -87,7 +95,7 @@ exports.disease = async (req, res, next) => {
 
       res.send(disease);
     } else {
-        // 질병 전체 출력
+      // 질병 전체 출력
     }
   } catch (error) {
     console.error(error);
@@ -95,27 +103,62 @@ exports.disease = async (req, res, next) => {
   }
 };
 
-exports.symptomRef = async ( req, res, next ) => {
-    const { symptom_id_list } = req.body;
-    try {
-        // 질병 목록 출력
-        const diseases = await Diseases.findAll({
-            include: {
-                model: Symptoms,
+exports.list = async (req, res, next) => {
+  const { keyword } = req.query;
+
+  try {
+    const diseases = keyword
+      ? await Disease.findAll({
+          where: {
+            name: {
+                [Op.like]: `%${keyword}%`,
             },
+          },
+          include: {
+            model: Symptom,
+          },
+        })
+      : await Disease.findAll({
+          include: {
+            model: Symptom,
+          },
         });
-        let symptoms = [], disease_list = [], disease_symptom_list = [];
-        for (let disease of diseases) {
-            symptoms = await disease.getSymptoms({
-                where: {
-                    id: symptom_id_list,
-                },
-            });
-            console.log(symptoms);
-            if(symptoms && symptoms.length === symptom_id_list.length) {
-                disease_list.push(disease);
-            }
-            /*_.foreach(symptoms, (symptom) => {
+
+    if (!diseases) {
+      res.status(400).send({ message: "해당 질병이 존재하지 않습니다." });
+      return;
+    }
+
+    res.send(diseases);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.symptomRef = async (req, res, next) => {
+  const { symptom_id_list } = req.body;
+  try {
+    // 질병 목록 출력
+    const diseases = await Disease.findAll({
+      include: {
+        model: Symptom,
+      },
+    });
+    let symptoms = [],
+      disease_list = [],
+      disease_symptom_list = [];
+    for (let disease of diseases) {
+      symptoms = await disease.getSymptoms({
+        where: {
+          id: symptom_id_list,
+        },
+      });
+      console.log(symptoms);
+      if (symptoms && symptoms.length === symptom_id_list.length) {
+        disease_list.push(disease);
+      }
+      /*_.foreach(symptoms, (symptom) => {
               disease_symptom_list.push(symptom.id);
             });
             let counter;
@@ -128,10 +171,10 @@ exports.symptomRef = async ( req, res, next ) => {
             if(counter === symptom_id_list.length) {
                 disease_list.push(disease);
             }*/
-        }
-        res.send(disease_list);
-    } catch(error) {
-        console.error(error);
-        next(error);
     }
+    res.send(disease_list);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };

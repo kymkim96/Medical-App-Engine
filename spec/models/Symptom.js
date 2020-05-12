@@ -1,10 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('subjects', {
+    return sequelize.define('symptoms', {
         name: {
             type: DataTypes.STRING(20),
             allowNull: false,
-            unique: true,
         },
+        part: {
+            type: DataTypes.STRING(10),
+            allowNull: true,
+        }
     }, {
         timestamps: true,
         paranoid: true,

@@ -10,14 +10,22 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Subjects = require('./subjects')(sequelize, Sequelize);
-db.Diseases = require('./diseases')(sequelize, Sequelize);
-db.Symptoms = require('./symptoms')(sequelize, Sequelize);
+db.Subject = require('./Subject')(sequelize, Sequelize);
+db.Disease = require('./Disease')(sequelize, Sequelize);
+db.Symptom = require('./Symptom')(sequelize, Sequelize);
+db.Drug = require('./Drug')(sequelize, Sequelize);
+db.Treatment = require('./Treatment')(sequelize, Sequelize);
 
-db.Subjects.belongsToMany(db.Diseases, { through: 'Treatment'});
-db.Diseases.belongsToMany(db.Subjects, { through: 'Treatment'});
+db.Disease.belongsToMany(db.Subject, { through: 'Clinic'});
+db.Subject.belongsToMany(db.Disease, { through: 'Clinic'});
 
-db.Diseases.belongsToMany(db.Symptoms, { through: 'Take'});
-db.Symptoms.belongsToMany(db.Diseases, { through: 'Take'});
+db.Disease.belongsToMany(db.Symptom, { through: 'Take'});
+db.Symptom.belongsToMany(db.Disease, { through: 'Take'});
+
+db.Disease.belongsToMany(db.Drug, { through: 'Prescription' });
+db.Drug.belongsToMany(db.Disease, { through: 'Prescription' });
+
+db.Disease.belongsToMany(db.Treatment, { through: 'Remedy' });
+db.Treatment.belongsToMany(db.Disease, { through: 'Remedy' });
 
 module.exports = db;
