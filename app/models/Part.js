@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('drugs', {
+    return sequelize.define('parts', {
         name: {
             type: DataTypes.STRING(20),
-            allowNull: false,
+            allowNull: true,
         },
     }, {
         timestamps: true,

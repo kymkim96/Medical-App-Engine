@@ -24,7 +24,8 @@
  <code>npm run migrate</code> : 최신 마이그레이션을 실행합니다. 데이터베이스를 수정하려면 이 커맨드를 먼저 실행합니다.   
  <code>npm run migrate:rollback</code> : 최신 마이그레이션을 롤백합니다. 위 커맨드를 실행한 뒤 
  이 커맨드를 실행하면 모든 테이블을 <code>drop</code> 합니다.   
- 마이그레이션은 drop-tables 파일 하나만 사용하도록 합니다. 
+ 마이그레이션은 drop-tables 파일 하나만 사용하도록 합니다.   
+ <code>npm run seed</code> : 시드 파일을 실행합니다. DB 테이블에 내용들을 초기화해줍니다.
 ## 실행
  <code>npm start</code> 명령과 <code>npm run dev</code> 으로 서버를 실행할 수 있습니다.   
  <code>npm start</code> 는 프로덕션 상황에서 사용하고 코드 변경에 반응하지 않습니다.   

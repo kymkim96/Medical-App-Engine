@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: true,
       },
-      content: {
+      description: {
         type: DataTypes.TEXT("long"),
         allowNull: true,
       },
@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT("long"),
         allowNull: true,
       },
-      part: {
-        type: DataTypes.STRING(10),
+      cure: {
+        type: DataTypes.TEXT("long"),
         allowNull: true,
       },
     },

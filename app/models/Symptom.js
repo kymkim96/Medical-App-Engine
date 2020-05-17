@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('subjects', {
+    return sequelize.define('symptoms', {
         name: {
             type: DataTypes.STRING(20),
-            allowNull: false,
+            allowNull: true,
         },
     }, {
         timestamps: true,
