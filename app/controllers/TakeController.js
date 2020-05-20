@@ -1,8 +1,8 @@
 const { Disease, Symptom } = require('../models');
 
 exports.take = async (req, res, next) => {
-    const { disease_id } = req.body;//req에서 disease랑 symptom 분리하는법을 찾아야함
-    const { symptom_id } = req.body;
+    //req에서 disease랑 symptom 분리하는법을 찾아야함
+    const { disease_id, symptom_id } = req.body;
 
     try {
         if (!disease_id) {

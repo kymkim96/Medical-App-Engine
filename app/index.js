@@ -4,13 +4,11 @@ const morgan = require('morgan');
 const session = require('express-session');
 require('dotenv').config();
 const { sequelize } = require('./models');
-// const passport = require('passport');
-// const passportConfig = require('./passport');
 const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const spec = require('../swaggerUI');
 
-const router = require('./route');
+const router = require('./router');
 
 const app = express();
 sequelize.sync();
@@ -40,17 +38,17 @@ app.use(session({
 
 app.use('/', router);
 
-app.use((req, res, next) => {
-    const err = new Error('not found');
-    err.status = 404;
-    next(err);
-});
-
-app.use((err, req, res, next) => {
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    res.status(err.status || 500).send({ message: 'error' });
-});
+// app.use((req, res, next) => {
+//     const err = new Error('not found');
+//     err.status = 404;
+//     next(err);
+// });
+//
+// app.use((err, req, res, next) => {
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'development' ? err : {};
+//     res.status(err.status || 500).send({ message: 'error' });
+// });
 
 app.listen(app.get('port'), () => {
     console.log(`connect to http://localhost:${app.get('port')}`);

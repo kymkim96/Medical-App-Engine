@@ -22,7 +22,7 @@ const options = {
     definition,
     // Path to the API specs
     apis: [
-        path.join(__dirname, '../spec/controllers/**/*.js')
+        path.join(__dirname, '../app/controllers/**/*.js')
     ]
 };
 

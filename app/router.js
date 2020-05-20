@@ -1,18 +1,17 @@
 const express = require('express');
-const route = express.Router({ prefix: 'v1'});
+const router = express.Router();
 const axios = require('axios');
-const spec = require('../swaggerUI')
 const DiseaseController = require('./controllers/DiseaseController');
 const SymptomController = require('./controllers/SyptomController');
 
-route.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.json({ message: 'Home' });
 });
 
 const serviceKey = process.env.SERVICE_KEY;
 const searchText = encodeURIComponent('병적 골절을');
 
-route.get('/api', async (req, res) => {
+router.get('/api', async (req, res) => {
     try {
         const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?sickType=1&medTp=2&diseaseType=SICK_NM&searchText=${searchText}&ServiceKey=${serviceKey}`);
         console.log(data.data);
@@ -22,13 +21,14 @@ route.get('/api', async (req, res) => {
         return;
     }
 });
-route.get('/spec', );
 
-route.get('/symptom', SymptomController.list);
-route.post('/symptom', SymptomController.create);
+router.get('/symptom', SymptomController.list);
+router.post('/symptom', SymptomController.create);
 
-route.get('/disease', DiseaseController.disease);
-route.post('/disease', DiseaseController.register);
-route.post('/disease/symptom', DiseaseController.symptomRef);
+router.post('/disease', DiseaseController.register);
+router.get('/disease', DiseaseController.list);
+router.get('/disease/:id', DiseaseController.read);
+router.patch('/disease/:id', DiseaseController.update);
+router.delete('/disease/:id', DiseaseController.delete);
 
-module.exports = route;
+module.exports = router;
