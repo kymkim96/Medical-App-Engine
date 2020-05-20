@@ -133,7 +133,7 @@ exports.register = async (req, res, next) => {
           }
           break;
         case "part_ids":
-          await exDisease.addParts(requestBody["part_ids"]);
+          await exDisease.addParts(requestBody[content]);
           break;
         case "symptoms":
           for (let symptom of requestBody[content]) {
@@ -144,7 +144,7 @@ exports.register = async (req, res, next) => {
           }
           break;
         case "symptom_ids":
-          await exDisease.addSymptoms(requestBody["symptom_ids"]);
+          await exDisease.addSymptoms(requestBody[content]);
           break;
         case "subjects":
           for (let subject of requestBody[content]) {
@@ -155,7 +155,7 @@ exports.register = async (req, res, next) => {
           }
           break;
         case "subect_ids":
-          await exDisease.addSubjects(requestBody["subect_ids"]);
+          await exDisease.addSubjects(requestBody[content]);
           break;
         case "drugs":
           for (let drug of requestBody[content]) {
@@ -166,7 +166,7 @@ exports.register = async (req, res, next) => {
           }
           break;
         case "drug_ids":
-          await exDisease.addDrugs(requestBody["drug_ids"]);
+          await exDisease.addDrugs(requestBody[content]);
           break;
       }
     }
@@ -268,16 +268,14 @@ exports.list = async (req, res, next) => {
   const { keyword, symptom_ids } = req.query;
   let { page, count } = req.query;
   const symptom_id_list = [];
-  for (let symptom_id of symptom_ids) {
-    symptom_id_list.push(parseInt(symptom_id));
+  if (symptom_ids) {
+    for (let symptom_id of symptom_ids) {
+      symptom_id_list.push(parseInt(symptom_id));
+    }
   }
 
-  if (!page) {
-    page = 1;
-  }
-  if (!count) {
-    count = 5;
-  }
+  page = page ? parseInt(page) : 1;
+  count = count ? parseInt(count) : 5;
 
   try {
     const diseases = keyword
@@ -429,7 +427,6 @@ exports.list = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   const { id } = req.params;
   const requestBody = req.body;
-  console.log(requestBody);
 
   try {
     let exDisease;
@@ -440,11 +437,14 @@ exports.update = async (req, res, next) => {
     for (let content in requestBody) {
       switch (content) {
         case "content":
-          await Disease.update({
-            ...requestBody[content],
-          }, {
-            where: { id },
-          });
+          await Disease.update(
+            {
+              ...requestBody[content],
+            },
+            {
+              where: { id },
+            }
+          );
           break;
         case "parts":
           for (let part of requestBody[content]) {
@@ -459,7 +459,7 @@ exports.update = async (req, res, next) => {
           const id_list_part = [];
           const parts = await exDisease.getParts();
           for (let part of parts) {
-            id_list.push(part.id);
+            id_list_part.push(part.id);
           }
           // 추가할 id
           for (let id of requestBody[content]) {
@@ -566,7 +566,7 @@ exports.update = async (req, res, next) => {
       include: [Part, Symptom, Subject, Drug],
     });
     res.json(disease);
-  } catch(error) {
+  } catch (error) {
     res.json(error);
     next(error);
   }
@@ -615,11 +615,11 @@ exports.delete = async (req, res, next) => {
     await disease.removeDrugs(drugs);
 
     await Disease.destroy({
-      where: { id }
+      where: { id },
     });
 
-    res.json({ message: '질병이 삭제되었습니다.' });
-  } catch(error) {
+    res.json({ message: "질병이 삭제되었습니다." });
+  } catch (error) {
     res.json(error);
     next(error);
   }

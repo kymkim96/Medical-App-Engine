@@ -1,5 +1,7 @@
+const sequelizePaginate = require('sequelize-paginate');
+
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define(
+  const diseases = sequelize.define(
     "diseases",
     {
       code: {
@@ -28,4 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true,
     }
   );
+  sequelizePaginate.paginate(diseases);
+  return diseases;
 };
