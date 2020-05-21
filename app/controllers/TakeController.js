@@ -1,3 +1,4 @@
+/*
 const { Disease, Symptom } = require('../models');
 
 exports.take = async (req, res, next) => {
@@ -29,3 +30,4 @@ exports.take = async (req, res, next) => {
         next(error);
     }
 };
+*/
