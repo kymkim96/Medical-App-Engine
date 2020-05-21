@@ -44,7 +44,7 @@ router.delete('/drug/:id', DrugController.delete);
 
 router.post('/part', PartController.register);
 router.get('/part/:id', PartController.read);
-router.get('/part/:id', PartController.list);
+router.get('/part', PartController.list);
 router.patch('/part/:id', PartController.update);
 router.delete('/part/:id', PartController.delete);
 
