@@ -7,11 +7,11 @@ exports.register = async (req, res, next) => {
     try {
         let exSubject;
         exSubject = await Subject.create({
-            ...requestBody["content"],
+            ...requestBody,
         });
 
         const subject = await Subject.findOne({
-            where: { id: exDrug.id },
+            where: { id: exSubject.id },
         });
         res.json(subject);
     } catch (error) {

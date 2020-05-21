@@ -1,4 +1,5 @@
 require("dotenv");
+const { Op } = require("sequelize");
 const { Part, Disease, Symptom } = require("../models");
 
 exports.register = async (req, res, next) => {
@@ -7,7 +8,7 @@ exports.register = async (req, res, next) => {
     try {
         let exPart;
         exPart = await Part.create({
-            ...requestBody["content"],
+            ...requestBody,
         });
 
         const part = await Part.findOne({
@@ -36,31 +37,24 @@ exports.read = async (req, res, next) => {
 };
 
 exports.list = async (req, res, next) => {
-    const { keyword } = req.query;
     let { page, count } = req.query;
 
     page = page ? parseInt(page) : 1;
     count = count ? parseInt(count) : 5;
 
     try {
-        const parts = keyword
-        await Part.findAll({
-            where: {
-                deletedAt: null,
-                    name: {
-                        [Op.like]: `%${keyword}%`,
-                    },
-                },
-                offset: count * (page - 1),
-                limit: count,
-            });
+        const parts = await Part.findAll({
+            where: { deletedAt: null },
+            offset: count * (page - 1),
+            limit: count,
+        });
 
         if (!parts) {
             res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
             return;
         }
 
-        res.send(ㅔㅁㄳs);
+        res.send(parts);
     } catch (error) {
         console.error(error);
         next(error);

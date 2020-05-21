@@ -7,7 +7,7 @@ exports.register = async (req, res, next) => {
     try {
         let exDrug;
         exDrug = await Drug.create({
-            ...requestBody["content"],
+            ...requestBody,
         });
 
         const drug = await Drug.findOne({
