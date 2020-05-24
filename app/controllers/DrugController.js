@@ -1,24 +1,87 @@
 require("dotenv");
 const { Drug, Disease } = require("../models");
+const { validateFormRegisterDrug } = require("../util/validateForm");
+
+/**
+ * @swagger
+ * /drugs:
+ *   post:
+ *     tags:
+ *     - Drug
+ *     summary: 약학정보 등록
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 약학정보 이름
+ *               description:
+ *                 type: string
+ *                 description: 약학정보 설명
+ *               ingredients:
+ *                 type: string
+ *                 description: 약학정보 성분
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
 
 exports.register = async (req, res, next) => {
-    const requestBody = req.body;
+    const { name, description, ingredients } = req.body;
 
     try {
-        let exDrug;
-        exDrug = await Drug.create({
-            ...requestBody,
+        if (!(await validateFormRegisterDrug(req, res))) {
+            next();
+            return;
+        }
+
+        const drug = await Drug.create({
+            name,
+            description,
+            ingredients,
         });
 
-        const drug = await Drug.findOne({
-            where: { id: exDrug.id },
-        });
         res.json(drug);
     } catch (error) {
         console.error(error);
-        next(error);
+        res.json(error);
+        next();
     }
 };
+
+/**
+ * @swagger
+ * /drugs/{id}:
+ *   get:
+ *     tags:
+ *     - Drug
+ *     summary: 약학정보 상세 내용
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: 약학정보 id
+ *       schema:
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
 
 exports.read = async (req, res, next) => {
     const { id } = req.params;
@@ -35,34 +98,164 @@ exports.read = async (req, res, next) => {
     }
 };
 
-exports.update = async (req, res, next) => {
-    const { id } = req.params;
-    const requestBody = req.body;
+/**
+ * @swagger
+ * /drugs:
+ *   get:
+ *     tags:
+ *     - Drug
+ *     summary: 약학정보 목록
+ *     parameters:
+ *     - name: page
+ *       in: query
+ *       description: 페이지 번호
+ *       schema:
+ *         type: integer
+ *     - name: count
+ *       in: query
+ *       description: 페이지 로우 개수
+ *       schema:
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
+
+exports.list = async (req, res, next) => {
+    let { page, count } = req.query;
+
+    page = page ? parseInt(page) : 1;
+    count = count ? parseInt(count) : 5;
 
     try {
-        let exDrug;
-        exDrug = await Drug.findOne({
+        const drugs = await Drug.findAll({
+            where: { deletedAt: null },
+            offset: count * (page - 1),
+            limit: count,
+        });
+
+        if (!drugs) {
+            res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
+            return;
+        }
+
+        res.send(drugs);
+    } catch (error) {
+        console.error(error);
+        res.json(error);
+        next();
+    }
+};
+
+/**
+ * @swagger
+ * /drugs/{id}:
+ *   patch:
+ *     tags:
+ *     - Drug
+ *     summary: 약학정보 수정
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: 약학정보 id
+ *       schema:
+ *         type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 약학정보 이름
+ *               description:
+ *                 type: string
+ *                 description: 약학정보 설명
+ *               ingredients:
+ *                 type: string
+ *                 description: 약학정보 성분
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
+
+exports.update = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const existDrug = await Drug.findOne({
             where: { id },
         });
 
-        await Drug.update(
+        if (!existDrug) {
+            res.status('400').json({ message: '약학정보가 존재하지 않습니다.' });
+            next();
+            return;
+        }
+
+        const drug = await Drug.update(
             {
-                ...requestBody[content],
+                ...req.body,
             },
             {
                 where: { id },
             }
         );
 
-        const drug = await Drug.findOne({
-            where: { id },
-        });
         res.json(drug);
     } catch (error) {
         res.json(error);
         next(error);
     }
 };
+
+/**
+ * @swagger
+ * /drugs/{id}:
+ *   delete:
+ *     tags:
+ *     - Drug
+ *     summary: 약학정보 삭제
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: 약학정보 id
+ *       schema:
+ *         type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 관련 부위 이름
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
 
 exports.delete = async (req, res, next) => {
     const { id } = req.params;
@@ -77,7 +270,7 @@ exports.delete = async (req, res, next) => {
             where: { id },
         });
 
-        res.json({ message: "약이 삭제되었습니다." });
+        res.json({ message: "약학정보가 삭제되었습니다." });
     } catch (error) {
         res.json(error);
         next(error);

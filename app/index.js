@@ -7,6 +7,7 @@ const { sequelize } = require('./models');
 const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const spec = require('../swaggerUI');
+const cors = require('cors');
 
 const router = require('./router');
 
@@ -32,6 +33,11 @@ app.use(session({
         httpOnly: true,
         secure: false
     },
+}));
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-type', 'Authorization'],
 }));
 // app.use(passport.initialize());
 // app.use(passport.session());

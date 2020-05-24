@@ -1,14 +1,13 @@
 require("dotenv").config();
 const _ = require("lodash");
-const axios = require("axios");
 const { Op } = require("sequelize");
 const { Disease, Symptom, Part, Subject, Drug } = require("../models");
-const { verifyFormRegisterDisease } = require("../util/verifyForm");
+const { validateFormRegisterDisease } = require("../util/validateForm");
 const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
 
 /**
  * @swagger
- * /disease:
+ * /diseases:
  *   post:
  *     tags:
  *     - Disease
@@ -111,7 +110,7 @@ const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
 exports.register = async (req, res, next) => {
   const requestBody = req.body;
 
-  if (!(await verifyFormRegisterDisease(req, res))) {
+  if (!(await validateFormRegisterDisease(req, res))) {
     next();
     return;
   }
@@ -180,13 +179,14 @@ exports.register = async (req, res, next) => {
     res.json(disease);
   } catch (error) {
     console.error(error);
-    next(error);
+    res.json(error);
+    next();
   }
 };
 
 /**
  * @swagger
- * /disease/{id}:
+ * /diseases/{id}:
  *   get:
  *     tags:
  *     - Disease
@@ -219,13 +219,14 @@ exports.read = async (req, res, next) => {
     res.json(disease);
   } catch (error) {
     console.error(error);
-    next(error);
+    res.json(error);
+    next();
   }
 };
 
 /**
  * @swagger
- * /disease:
+ * /diseases:
  *   get:
  *     tags:
  *     - Disease
@@ -233,17 +234,17 @@ exports.read = async (req, res, next) => {
  *     parameters:
  *     - name: keyword
  *       in: query
- *       description: 질병 검색 키워드
+ *       description: 검색 키워드
  *       schema:
  *         type: integer
  *     - name: page
  *       in: query
- *       description: 질병 검색 결과 페이지 번호
+ *       description: 페이지 번호
  *       schema:
  *         type: integer
  *     - name: count
  *       in: query
- *       description: 질병 검색 결과 페이지 로우 개수
+ *       description: 페이지 로우 개수
  *       schema:
  *         type: integer
  *     - name: symptom_ids
@@ -313,13 +314,14 @@ exports.list = async (req, res, next) => {
     res.send(diseases);
   } catch (error) {
     console.error(error);
-    next(error);
+    res.json(error);
+    next();
   }
 };
 
 /**
  * @swagger
- * /disease/{id}:
+ * /diseases/{id}:
  *   patch:
  *     tags:
  *     - Disease
@@ -567,14 +569,15 @@ exports.update = async (req, res, next) => {
     });
     res.json(disease);
   } catch (error) {
+    console.error(error);
     res.json(error);
-    next(error);
+    next();
   }
 };
 
 /**
  * @swagger
- * /disease/{id}:
+ * /diseases/{id}:
  *   delete:
  *     tags:
  *     - Disease
@@ -620,7 +623,8 @@ exports.delete = async (req, res, next) => {
 
     res.json({ message: "질병이 삭제되었습니다." });
   } catch (error) {
+    console.error(error);
     res.json(error);
-    next(error);
+    next();
   }
 };

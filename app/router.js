@@ -16,7 +16,7 @@ const searchText = encodeURIComponent('병적 골절을');
 
 router.get('/api', async (req, res) => {
     try {
-        const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?sickType=1&medTp=2&diseaseType=SICK_NM&searchText=${searchText}&ServiceKey=${serviceKey}`);
+        const data = await axios.get(`http://apis.data.go.kr/B551182/diseasesInfoService/getDissNameCodeList?sickType=1&medTp=2&diseasesType=SICK_NM&searchText=${searchText}&ServiceKey=${serviceKey}`);
         console.log(data.data);
         res.send(data.data);
     } catch(e) {
@@ -25,32 +25,32 @@ router.get('/api', async (req, res) => {
     }
 });
 
-router.post('/symptom', SymptomController.register);
-router.get('/symptom', SymptomController.list);
-router.get('/symptom/:id', SymptomController.read);
-router.patch('/symptom/:id', SymptomController.update);
-router.delete('/symptom/:id', SymptomController.delete);
+router.post('/symptoms', SymptomController.register);
+router.get('/symptoms', SymptomController.list);
+router.get('/symptoms/:id', SymptomController.read);
+router.patch('/symptoms/:id', SymptomController.update);
+router.delete('/symptoms/:id', SymptomController.delete);
 
-router.post('/disease', DiseaseController.register);
-router.get('/disease', DiseaseController.list);
-router.get('/disease/:id', DiseaseController.read);
-router.patch('/disease/:id', DiseaseController.update);
-router.delete('/disease/:id', DiseaseController.delete);
+router.post('/diseases', DiseaseController.register);
+router.get('/diseases', DiseaseController.list);
+router.get('/diseases/:id', DiseaseController.read);
+router.patch('/diseases/:id', DiseaseController.update);
+router.delete('/diseases/:id', DiseaseController.delete);
 
-router.post('/drug', DrugController.register);
-router.get('/drug/:id', DrugController.read);
-router.patch('/drug/:id', DrugController.update);
-router.delete('/drug/:id', DrugController.delete);
+router.post('/drugs', DrugController.register);
+router.get('/drugs/:id', DrugController.read);
+router.patch('/drugs/:id', DrugController.update);
+router.delete('/drugs/:id', DrugController.delete);
 
-router.post('/part', PartController.register);
-router.get('/part/:id', PartController.read);
-router.get('/part', PartController.list);
-router.patch('/part/:id', PartController.update);
-router.delete('/part/:id', PartController.delete);
+router.post('/parts', PartController.register);
+router.get('/parts/:id', PartController.read);
+router.get('/parts', PartController.list);
+router.patch('/parts/:id', PartController.update);
+router.delete('/parts/:id', PartController.delete);
 
-router.post('/subject', SubjectController.register);
-router.get('/subject/:id', SubjectController.read);
-router.patch('/subject/:id', SubjectController.update);
-router.delete('/subject/:id', SubjectController.delete);
+router.post('/subjects', SubjectController.register);
+router.get('/subjects/:id', SubjectController.read);
+router.patch('/subjects/:id', SubjectController.update);
+router.delete('/subjects/:id', SubjectController.delete);
 
 module.exports = router;
