@@ -20,16 +20,12 @@ exports.fetchDiseasesOfSymptom = async (req, symptom_id_list) => {
             [Op.like]: `%${keyword}%`,
           },
         },
-        offset: count * (page - 1),
-        limit: count,
         include: [Part, Symptom, Subject, Drug],
       })
     : await Disease.findAll({
         where: {
           deletedAt: null,
         },
-        offset: count * (page - 1),
-        limit: count,
         include: [Part, Symptom, Subject, Drug],
       });
 

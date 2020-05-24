@@ -5,12 +5,12 @@ const _ = require("lodash");
 exports.fetchSymptomsOfPart = async (req, part_id_list) => {
     let { keyword, page, count } = req.query;
 
-    if (!page) {
-        page = 1;
-    }
-    if (!count) {
-        count = 5;
-    }
+    // if (!page) {
+    //     page = 1;
+    // }
+    // if (!count) {
+    //     count = 5;
+    // }
     const symptoms = keyword
         ? await Symptom.findAll({
             where: {
@@ -19,16 +19,12 @@ exports.fetchSymptomsOfPart = async (req, part_id_list) => {
                     [Op.like]: `%${keyword}%`,
                 },
             },
-            offset: count * (page -1),
-            limit: count,
             include: [Part, Disease],
         })
     : await Symptom.findAll({
         where: {
             deletedAt: null,
         },
-        offset: count * (page - 1),
-        limit: count,
         include: [Part, Disease],
     });
 
@@ -44,7 +40,7 @@ exports.fetchSymptomsOfPart = async (req, part_id_list) => {
             },
         });
         if (parts && parts.length === part_id_list.length) {
-            symptom_list.push(symptom)
+            symptom_list.push(symptom);
         }
     }
 
