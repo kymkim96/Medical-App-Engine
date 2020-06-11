@@ -123,14 +123,12 @@ exports.read = async (req, res, next) => {
 exports.list = async (req, res, next) => {
   let { page, count } = req.query;
 
-  page = page ? parseInt(page) : 1;
-  count = count ? parseInt(count) : 5;
+  // page = page ? parseInt(page) : 1;
+  // count = count ? parseInt(count) : 5;
 
   try {
     const parts = await Part.findAll({
       where: { deletedAt: null },
-      offset: count * (page - 1),
-      limit: count,
     });
 
     if (!parts) {

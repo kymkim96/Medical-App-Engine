@@ -8,12 +8,14 @@ const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const spec = require('../swaggerUI');
 const cors = require('cors');
+const passport = require('passport');
+const passportConfig = require('./auth');
 
 const router = require('./router');
 
 const app = express();
 sequelize.sync();
-// passportConfig(passport);
+passportConfig(passport);
 
 app.set('port', process.env.PORT || 8010);
 
@@ -25,22 +27,12 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-        httpOnly: true,
-        secure: false
-    },
-}));
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-type', 'Authorization'],
+    allowedHeaders: ['Content-type', 'Authorization', 'Accept'],
 }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
 
 app.use('/', router);
 
