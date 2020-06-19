@@ -11,6 +11,7 @@ exports.validateForm = (req, res) => {
         return false;
     }
 
+
     if (password.length < 6) {
         res.status(400).json({ message: "password는 비어있어선 안됩니다." });
         return false;

@@ -31,7 +31,7 @@ db.Drug.belongsToMany(db.Disease, { through: 'diseases_drugs' });
 db.Disease.belongsToMany(db.Part, { through: 'diseases_parts'});
 db.Part.belongsToMany(db.Disease, { through: 'diseases_parts'});
 
-db.Symptom.belongsToMany(db.Part, { through: 'symptoms_parts'});
-db.Part.belongsToMany(db.Symptom, { through: 'symptoms_parts'});
+db.Symptom.belongsTo(db.Part);
+db.Part.hasMany(db.Symptom);
 
 module.exports = db;

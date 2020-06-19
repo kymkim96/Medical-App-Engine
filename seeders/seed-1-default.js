@@ -1,7 +1,17 @@
 "use strict";
+const bcrypt = require('bcrypt');
 
 exports.up = (queryInterface, Sequelize) => {
   return Promise.all([
+    queryInterface.bulkInsert("users", [
+      {
+        nickname: 'admin',
+        password: bcrypt.hashSync('adm!n1', 12),
+        role: 'super-admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]),
     queryInterface.bulkInsert("diseases", [
       {
         code: "A00",
@@ -88,48 +98,6 @@ exports.up = (queryInterface, Sequelize) => {
       },
       {
         name: "눈",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]),
-    queryInterface.bulkInsert("symptoms", [
-      {
-        name: "편두통이 있다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "두피가 따갑다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "목이 따끔하다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "목이 부었다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "소화가 잘 안된다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "체했다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "눈이 따갑다",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "눈이 자주 충혈된다",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
