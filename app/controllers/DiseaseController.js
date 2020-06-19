@@ -278,8 +278,8 @@ exports.list = async (req, res, next) => {
     }
   }
 
-  page = page ? parseInt(page) : 1;
-  count = count ? parseInt(count) : 5;
+  // page = page ? parseInt(page) : 1;
+  // count = count ? parseInt(count) : 5;
 
   try {
     const diseases = keyword
@@ -296,16 +296,16 @@ exports.list = async (req, res, next) => {
               page 번호가 1이고 count가 5일 때, offset은 0이고
               page 번호가 2이고 count가 5일 때, offset은 5이다.
                */
-            offset: count * (page - 1),
-            limit: count,
+            // offset: count * (page - 1),
+            // limit: count,
             include: [Part, Symptom, Subject, Drug],
           })
       : symptom_ids
       ? await fetchDiseasesOfSymptom(req, symptom_id_list)
       : await Disease.findAll({
           where: { deletedAt: null },
-          offset: count * (page - 1),
-          limit: count,
+          // offset: count * (page - 1),
+          // limit: count,
           include: [Part, Symptom, Subject, Drug],
         });
 
