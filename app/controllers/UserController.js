@@ -32,6 +32,8 @@ exports.profile = async(req, res) => {
  *     tags:
  *     - User
  *     summary: 관리자 수정
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *     - name: id
  *       in: path
@@ -87,16 +89,6 @@ exports.list = async(req, res, next) => {
 };
 
 exports.delete = async(req, res, next) => {
-    try {
-
-    } catch(error) {
-        console.error(error);
-        res.json(error);
-        next();
-    }
-};
-
-exports.register = async(req, res, next) => {
     try {
 
     } catch(error) {

@@ -1,7 +1,6 @@
 require("dotenv").config();
 const { Op } = require("sequelize");
-const { Symptom, Part } = require("../models");
-const { fetchSymptomsOfPart } = require("../util/functionSymptom");
+const { Symptom, Part, Disease } = require("../models");
 const { validateFormRegisterSymptom } = require("../util/validateForm");
 
 /**
@@ -32,11 +31,9 @@ const { validateFormRegisterSymptom } = require("../util/validateForm");
  *                     name:
  *                       type: string
  *                       description: 관련 부위
- *               part_ids:
- *                 type: array
- *                 items:
- *                   type: integer
- *                   description: 관련 부위 id
+ *               partId:
+ *                 type: integer
+ *                 description: 관련 부위 id
  *     responses:
  *       '200':
  *         description: OK
@@ -71,7 +68,7 @@ exports.register = async (req, res, next) => {
             await Symptom.addPart(newPart);
           }
           break;
-        case "part_ids":
+        case "partId":
           await Symptom.addPart(requestBody[content]);
           break;
       }
@@ -137,6 +134,11 @@ exports.read = async (req, res, next) => {
  *     - Symptom
  *     summary: 증상 목록
  *     parameters:
+ *     - nmae: keyword
+ *       in: query
+ *       description: 검색어
+ *       schema:
+ *         type: string
  *     - name: page
  *       in: query
  *       description: 페이지 번호
@@ -147,13 +149,11 @@ exports.read = async (req, res, next) => {
  *       description: 페이지 로우 개수
  *       schema:
  *         type: integer
- *     - name: part_ids
+ *     - name: partId
  *       in: query
- *       description: 관련 부위 id 리스트
+ *       description: 관련 부위 id
  *       schema:
- *         type: array
- *         items:
- *           type: integer
+ *         type: integer
  *     responses:
  *       '200':
  *         description: OK
@@ -166,47 +166,41 @@ exports.read = async (req, res, next) => {
  */
 
 exports.list = async (req, res, next) => {
-  const { keyword, part_ids } = req.query;
+  const { keyword, partId } = req.query;
   let { page, count } = req.query;
-  const part_id_list = [];
-  if (part_ids) {
-    for (let part_id of part_ids) {
-      part_id_list.push(parseInt(part_id));
-    }
-  }
 
-  page = page ? parseInt(page) : 1;
-  count = count ? parseInt(count) : 5;
+  // page = page ? parseInt(page) : 1;
+  // count = count ? parseInt(count) : 5;
 
   try {
-    const symptoms = keyword
-      ? part_ids
-        ? await fetchSymptomsOfPart(req, part_id_list)
-        : await Symptom.findAll({
-            where: {
-              deletedAt: null,
-              name: {
-                [Op.like]: `%${keyword}%`,
+    const symptoms = await Symptom.findAll({
+      where: keyword
+          ? partId
+              ? {
+                deletedAt: null,
+                name: {
+                  [Op.like]: `%${keyword}%`,
+                },
+                partId: parseInt(partId),
+              }
+              : {
+                deletedAt: null,
+                name: {
+                  [Op.like]: `%${keyword}%`,
+                },
+              }
+          : partId
+              ? {
+                deletedAt: null,
+                partId: parseInt(partId),
+              }
+              : {
+                deletedAt: null,
               },
-            },
-            offset: count * (page - 1),
-            limit: count,
-            include: [Part],
-          })
-      : part_ids
-      ? await fetchSymptomsOfPart(req, part_id_list)
-      : await Symptom.findAll({
-          where: { deletedAt: null },
-          offset: count * (page - 1),
-          limit: count,
-          include: [Part],
-        });
-
-    if (!symptoms) {
-      res.status(400).send({ message: "증상이 존재하지 않습니다." });
-      next();
-      return;
-    }
+      // offset: count * (page - 1),
+      // limit: count,
+      include: [Part, Disease],
+    });
 
     res.send(symptoms);
   } catch (error) {
@@ -249,11 +243,9 @@ exports.list = async (req, res, next) => {
  *                     name:
  *                       type: string
  *                       description: 관련 부위
- *               part_ids:
- *                 type: array
- *                 items:
- *                   type: integer
- *                   description: 관련 부위 id
+ *               partId:
+ *                 type: integer
+ *                 description: 관련 부위 id
  *     responses:
  *       '200':
  *         description: OK
@@ -264,7 +256,6 @@ exports.list = async (req, res, next) => {
  *       '409':
  *         $ref: '#/components/responses/409'
  */
-
 
 exports.update = async (req, res, next) => {
   const { id } = req.params;
@@ -302,31 +293,19 @@ exports.update = async (req, res, next) => {
             await Symptom.addPart(newPart);
           }
           break;
-        case "part_ids":
-          const id_list_part = [];
-          const parts = await Symptom.getParts();
-          for (let part of parts) {
-            id_list_part.push(part.id);
-          }
-          for (let id of requestBody[content]) {
-            if (!id_list_part.includes(id)) {
-              await Symptom.addPart(id);
-            }
-          }
-
-          for (let id of id_list_part) {
-            if (!requestBody[content].includes(id)) {
-              await Symptom.removePart(id);
-            }
-          }
+        case "partId":
+          await Symptom.update({
+            partId: requestBody[content],
+          });
           break;
       }
     }
 
     const resultSymptom = await Symptom.findOne({
       where: { id },
-      include: [Part],
+      include: [Part, Symptom],
     });
+
     res.json(resultSymptom);
   } catch (error) {
     res.json(error);
@@ -367,8 +346,8 @@ exports.delete = async (req, res, next) => {
     const diseases = await symptom.getDiseases();
     await symptom.removeDisease(diseases);
 
-    const parts = await symptom.getParts();
-    await symptom.removePart(parts);
+    const parts = await symptom.getPart();
+    await symptom.removePart(part);
 
     await Symptom.destroy({
       where: { id },

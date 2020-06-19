@@ -140,55 +140,5 @@ exports.up = (queryInterface, Sequelize) => {
                 updatedAt: new Date(),
             },
         ]),
-        queryInterface.bulkInsert("symptoms_parts", [
-            {
-                symptomId: 1,
-                partId: 1,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 2,
-                partId: 1,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 3,
-                partId: 2,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 4,
-                partId: 2,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 5,
-                partId: 3,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 6,
-                partId: 3,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 7,
-                partId: 4,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-            {
-                symptomId: 8,
-                partId: 4,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            },
-        ]),
     ]);
 };

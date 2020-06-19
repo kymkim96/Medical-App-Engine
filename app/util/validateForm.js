@@ -2,7 +2,7 @@ const { Disease, Symptom, Part, Drug, Subject } = require("../models");
 const { Op } = require('sequelize');
 
 exports.validateFormRegisterDisease = async (req, res) => {
-  const { code, name } = req.body;
+  const { code, name } = req.body.content;
 
   if (!code) {
     res.status(400).json({
@@ -18,18 +18,18 @@ exports.validateFormRegisterDisease = async (req, res) => {
     return false;
   }
 
-  const existDisease = await Disease.findOne({
-    where: {
-      [Op.or]: [ { name }, { code } ],
-    },
-  });
-
-  if (existDisease) {
-    res.status(400).json({
-      message: "이미 존재하는 질병입니다.",
-    });
-    return false;
-  }
+  // const existDisease = await Disease.findOne({
+  //   where: {
+  //     [Op.or]: [ { name }, { code } ],
+  //   },
+  // });
+  //
+  // if (existDisease) {
+  //   res.status(400).json({
+  //     message: "이미 존재하는 질병입니다.",
+  //   });
+  //   return false;
+  // }
 
   return true;
 };
@@ -40,19 +40,6 @@ exports.validateFormRegisterSymptom = async (req, res) => {
   if (!name) {
     res.status(400).json({
       message: "name은 비어있어선 안됩니다.",
-    });
-    return false;
-  }
-
-  const existSymptom = await Symptom.findOne({
-    where: {
-      name,
-    },
-  });
-
-  if (existSymptom) {
-    res.status(400).json({
-      message: "이미 존재하는 증상입니다.",
     });
     return false;
   }

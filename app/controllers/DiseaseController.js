@@ -58,6 +58,9 @@ const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
  *                     name:
  *                       type: string
  *                       description: 증상명
+ *                     part_id:
+ *                       type: integer
+ *                       description: 관련 부위 id
  *               symptom_ids:
  *                 type: array
  *                 items:
@@ -306,11 +309,6 @@ exports.list = async (req, res, next) => {
           include: [Part, Symptom, Subject, Drug],
         });
 
-    if (!diseases) {
-      res.status(400).send({ message: "해당 질병이 존재하지 않습니다." });
-      return;
-    }
-
     res.send(diseases);
   } catch (error) {
     console.error(error);
@@ -378,6 +376,9 @@ exports.list = async (req, res, next) => {
  *                     name:
  *                       type: string
  *                       description: 증상명
+ *                     part_id:
+ *                       type: integer
+ *                       description: 관련 부위 id
  *               symptom_ids:
  *                 type: array
  *                 items:
