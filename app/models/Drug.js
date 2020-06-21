@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(),
             allowNull: true,
         },
+        side_effects: {
+            type: DataTypes.STRING(),
+            allowNull: true,
+        },
     }, {
         timestamps: true,
         paranoid: true,

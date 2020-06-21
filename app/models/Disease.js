@@ -16,10 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT("long"),
         allowNull: true,
       },
-      images: {
-        type: DataTypes.TEXT("long"),
-        allowNull: true,
-      },
       cure: {
         type: DataTypes.TEXT("long"),
         allowNull: true,
