@@ -347,7 +347,7 @@ exports.delete = async (req, res, next) => {
     await symptom.removeDisease(diseases);
 
     const parts = await symptom.getPart();
-    await symptom.removePart(part);
+    await symptom.removePart(parts);
 
     await Symptom.destroy({
       where: { id },

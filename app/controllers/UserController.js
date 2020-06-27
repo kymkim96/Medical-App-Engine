@@ -78,9 +78,74 @@ exports.update = async(req, res, next) => {
     }
 };
 
-exports.list = async(req, res, next) => {
-    try {
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     tags:
+ *     - User
+ *     summary: 관리자 목록
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *     - name: keyword
+ *       in: query
+ *       description: 검색어
+ *       schema:
+ *         type: string
+ *     - name: page
+ *       in: query
+ *       description: 페이지 번호
+ *       schema:
+ *         type: integer
+ *     - name: count
+ *       in: query
+ *       description: 페이지 로우 개수
+ *       schema:
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
 
+exports.list = async(req, res, next) => {
+    const { keyword, userId } = req.query;
+        let { pate, count } =req.query;
+
+    try {
+        const users = await User.findAll({
+            where: keyword
+                ? userId
+                    ? {
+                        deletedAt: null,
+                        nickname: {
+                            [Op.like]: `%${keyword}%`,
+                        },
+                        userId: parseInt(userId),
+                    }
+                    : {
+                        deletedAt: null,
+                        nickname: {
+                            [Op.like]: `%${keyword}%`,
+                        },
+                    }
+                : userId
+                    ? {
+                        deletedAt: null,
+                        userId: parseInt(userId),
+                    }
+                    : {
+                        deletedAt: null,
+                    },     
+        });
+
+        res.send(users);
     } catch(error) {
         console.error(error);
         res.json(error);
@@ -88,9 +153,37 @@ exports.list = async(req, res, next) => {
     }
 };
 
+/**
+ * @swagger
+ * /profile/{id}:
+ *   delete:
+ *     tags:
+ *     - User
+ *     summary: 관리자 삭제
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: 관리자 id
+ *       schema:
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
+
 exports.delete = async(req, res, next) => {
     try {
+        await User.destroy({
+            where: { id },
+        });
 
+        res.json({ message: "관리자가 삭제되었습니다." });
     } catch(error) {
         console.error(error);
         res.json(error);
