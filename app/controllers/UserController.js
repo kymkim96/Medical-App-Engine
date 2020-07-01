@@ -28,7 +28,7 @@ exports.profile = async (req, res) => {
 
 /**
  * @swagger
- * /profile/{id}:
+ * /users/{id}:
  *   patch:
  *     tags:
  *     - User
@@ -192,7 +192,7 @@ exports.read = async (req, res, next) => {
 
 /**
  * @swagger
- * /profile/{id}:
+ * /users/{id}:
  *   delete:
  *     tags:
  *     - User
