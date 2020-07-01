@@ -1,4 +1,5 @@
-const { User } = require('../models');
+const { Op } = require('sequelize');
+const { User } = require("../models");
 
 /**
  * @swagger
@@ -20,9 +21,9 @@ const { User } = require('../models');
  *         $ref: '#/components/responses/409'
  */
 
-exports.profile = async(req, res) => {
-    const { user } = req;
-    res.json(user);
+exports.profile = async (req, res) => {
+  const { user } = req;
+  res.json(user);
 };
 
 /**
@@ -62,20 +63,23 @@ exports.profile = async(req, res) => {
  *         $ref: '#/components/responses/409'
  */
 
-exports.update = async(req, res, next) => {
-    const { id } = req.params;
+exports.update = async (req, res, next) => {
+  const { id } = req.params;
 
-    try {
-        const user = await User.update({
-            ...req.body,
-        }, { where: { id } });
+  try {
+    const user = await User.update(
+      {
+        ...req.body,
+      },
+      { where: { id } }
+    );
 
-        res.json(user);
-    } catch(error) {
-        console.error(error);
-        res.json(error);
-        next();
-    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+    next();
+  }
 };
 
 /**
@@ -114,39 +118,72 @@ exports.update = async(req, res, next) => {
  *         $ref: '#/components/responses/409'
  */
 
-exports.list = async(req, res, next) => {
-    const { keyword, userId } = req.query;
-        let { pate, count } =req.query;
+exports.list = async (req, res, next) => {
+    const { keyword } = req.query;
+    let { pate, count } = req.query;
 
     try {
         const users = await User.findAll({
             where: keyword
-                ? userId
-                    ? {
-                        deletedAt: null,
-                        nickname: {
-                            [Op.like]: `%${keyword}%`,
-                        },
-                        userId: parseInt(userId),
-                    }
-                    : {
-                        deletedAt: null,
-                        nickname: {
-                            [Op.like]: `%${keyword}%`,
-                        },
-                    }
-                : userId
-                    ? {
-                        deletedAt: null,
-                        userId: parseInt(userId),
-                    }
-                    : {
-                        deletedAt: null,
-                    },     
+                ? {
+                    deletedAt: null,
+                    nickname: {
+                        [Op.like]: `%${keyword}%`,
+                    },
+                }
+                : {
+                    deletedAt: null,
+                },
         });
 
         res.send(users);
-    } catch(error) {
+    } catch (error) {
+        console.error(error);
+        res.json(error);
+        next();
+    }
+};
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     tags:
+ *     - User
+ *     summary: 관리자 상세조회
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: 관리자 id
+ *       schema:
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: OK
+ *       '400':
+ *         $ref: '#/components/responses/400'
+ *       '401':
+ *         $ref: '#/components/responses/401'
+ *       '409':
+ *         $ref: '#/components/responses/409'
+ */
+
+exports.read = async (req, res, next) => {
+    const { id } = req.params;
+    let { pate, count } = req.query;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                deletedAt: null,
+                id,
+            }
+        });
+
+        res.send(user);
+    } catch (error) {
         console.error(error);
         res.json(error);
         next();
@@ -177,16 +214,18 @@ exports.list = async(req, res, next) => {
  *         $ref: '#/components/responses/409'
  */
 
-exports.delete = async(req, res, next) => {
-    try {
-        await User.destroy({
-            where: { id },
-        });
+exports.delete = async (req, res, next) => {
+    const { id } = req.query;
 
-        res.json({ message: "관리자가 삭제되었습니다." });
-    } catch(error) {
-        console.error(error);
-        res.json(error);
-        next();
-    }
+  try {
+    await User.destroy({
+      where: { id },
+    });
+
+    res.json({ message: "관리자가 삭제되었습니다." });
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+    next();
+  }
 };

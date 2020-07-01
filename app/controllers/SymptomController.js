@@ -10,6 +10,8 @@ const { validateFormRegisterSymptom } = require("../util/validateForm");
  *     tags:
  *     - Symptom
  *     summary: 증상 등록
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -23,14 +25,6 @@ const { validateFormRegisterSymptom } = require("../util/validateForm");
  *                   name:
  *                     type: string
  *                     description: 증상 이름
- *               parts:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                       description: 관련 부위
  *               partId:
  *                 type: integer
  *                 description: 관련 부위 id
@@ -58,20 +52,8 @@ exports.register = async (req, res, next) => {
       ...requestBody["content"],
     });
 
-    for (let content in requestBody) {
-      switch (content) {
-        case "parts":
-          for (let part of requestBody[content]) {
-            const newPart = await Part.create({
-              ...part,
-            });
-            await Symptom.addPart(newPart);
-          }
-          break;
-        case "partId":
-          await Symptom.addPart(requestBody[content]);
-          break;
-      }
+    if (requestBody['partId']) {
+      await symptom.setPart(requestBody['partId']);
     }
 
     const resultSymptom = await Symptom.findOne({
@@ -172,6 +154,21 @@ exports.list = async (req, res, next) => {
   // page = page ? parseInt(page) : 1;
   // count = count ? parseInt(count) : 5;
 
+  let partIdForKeyword;
+  if (keyword) {
+    const parts = await Part.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${keyword}%`,
+        },
+      }});
+    const tempArray = [];
+    for (let part of parts) {
+      tempArray.push(part.id);
+    }
+    partIdForKeyword = tempArray;
+  }
+
   try {
     const symptoms = await Symptom.findAll({
       where: keyword
@@ -185,8 +182,11 @@ exports.list = async (req, res, next) => {
               }
               : {
                 deletedAt: null,
-                name: {
-                  [Op.like]: `%${keyword}%`,
+                [Op.or]: {
+                  name: {
+                    [Op.like]: `%${keyword}%`,
+                  },
+                  partId: partIdForKeyword
                 },
               }
           : partId
@@ -235,14 +235,6 @@ exports.list = async (req, res, next) => {
  *                   name:
  *                     type: string
  *                     description: 증상 이름
- *               parts:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                       description: 관련 부위
  *               partId:
  *                 type: integer
  *                 description: 관련 부위 id
@@ -285,14 +277,6 @@ exports.update = async (req, res, next) => {
             }
           );
           break;
-        case "parts":
-          for (let part of requestBody[content]) {
-            const newPart = await Part.create({
-              ...part,
-            });
-            await Symptom.addPart(newPart);
-          }
-          break;
         case "partId":
           await Symptom.update({
             partId: requestBody[content],
@@ -303,7 +287,7 @@ exports.update = async (req, res, next) => {
 
     const resultSymptom = await Symptom.findOne({
       where: { id },
-      include: [Part, Symptom],
+      include: [Part],
     });
 
     res.json(resultSymptom);

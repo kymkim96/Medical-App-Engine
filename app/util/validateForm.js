@@ -35,9 +35,9 @@ exports.validateFormRegisterDisease = async (req, res) => {
 };
 
 exports.validateFormRegisterSymptom = async (req, res) => {
-  const { name } = req.body;
+  const { content } = req.body;
 
-  if (!name) {
+  if (!content.name) {
     res.status(400).json({
       message: "name은 비어있어선 안됩니다.",
     });
@@ -65,7 +65,7 @@ exports.validateFormRegisterPart = async (req, res) => {
 
   if (existPart) {
     res.status(400).json({
-      message: "이미 존재하는 증상입니다.",
+      message: "이미 존재하는 부위입니다.",
     });
     return false;
   }
@@ -91,7 +91,7 @@ exports.validateFormRegisterDrug = async (req, res) => {
 
   if (existDrug) {
     res.status(400).json({
-      message: "이미 존재하는 증상입니다.",
+      message: "이미 존재하는 약학 정보입니다.",
     });
     return false;
   }
@@ -117,7 +117,7 @@ exports.validateFormRegisterSubject = async (req, res) => {
 
   if (existSubject) {
     res.status(400).json({
-      message: "이미 존재하는 증상입니다.",
+      message: "이미 존재하는 진료과목입니다.",
     });
     return false;
   }

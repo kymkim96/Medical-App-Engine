@@ -34,6 +34,7 @@ router.post('/users', AuthController.register);
 router.post('/sign-in', AuthController.signIn);
 router.get('/profile', withAdmin, UserController.profile);
 router.get('/users', withAdmin, UserController.list);
+router.get('/users/:id', withAdmin, UserController.read);
 router.patch('/profile/:id', withAdmin, UserController.update);
 router.delete('/profile/:id', withAdmin, UserController.delete);
 

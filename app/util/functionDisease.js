@@ -20,13 +20,29 @@ exports.fetchDiseasesOfSymptom = async (req, symptom_id_list) => {
             [Op.like]: `%${keyword}%`,
           },
         },
-        include: [Part, Symptom, Subject, Drug],
+        include: [
+          Part,
+          {
+            model: Symptom,
+            include: [Part],
+          },
+          Subject,
+          Drug,
+        ],
       })
     : await Disease.findAll({
         where: {
           deletedAt: null,
         },
-        include: [Part, Symptom, Subject, Drug],
+        include: [
+          Part,
+          {
+            model: Symptom,
+            include: [Part],
+          },
+          Subject,
+          Drug,
+        ],
       });
 
   if (!diseases) {

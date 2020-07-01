@@ -1,4 +1,5 @@
 require("dotenv");
+const { Op } = require("sequelize");
 const { Disease, Subject } = require("../models");
 const { validateFormRegisterSubject } = require("../util/validateForm");
 
@@ -31,23 +32,23 @@ const { validateFormRegisterSubject } = require("../util/validateForm");
  */
 
 exports.register = async (req, res, next) => {
-    const { name } = req.body;
+  const { name } = req.body;
 
-    try {
-        if (!(await validateFormRegisterSubject(req, res))) {
-            next();
-            return;
-        }
-
-        const subject = await Subject.create({
-            name,
-        });
-
-        res.json(subject);
-    } catch (error) {
-        console.error(error);
-        next(error);
+  try {
+    if (!(await validateFormRegisterSubject(req, res))) {
+      next();
+      return;
     }
+
+    const subject = await Subject.create({
+      name,
+    });
+
+    res.json(subject);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 /**
@@ -75,18 +76,18 @@ exports.register = async (req, res, next) => {
  */
 
 exports.read = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const subject = await Subject.findOne({
-            where: { id, deletedAt: null },
-            include: [Disease],
-        });
-        res.json(subject);
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
+  try {
+    const subject = await Subject.findOne({
+      where: { id, deletedAt: null },
+      include: [Disease],
+    });
+    res.json(subject);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 /**
@@ -97,6 +98,11 @@ exports.read = async (req, res, next) => {
  *     - Subject
  *     summary: 진료과목 목록
  *     parameters:
+ *     - name: keyword
+ *       in: query
+ *       description: 검색 키워드
+ *       schema:
+ *         type: string
  *     - name: page
  *       in: query
  *       description: 페이지 번호
@@ -119,29 +125,40 @@ exports.read = async (req, res, next) => {
  */
 
 exports.list = async (req, res, next) => {
-    let { page, count } = req.query;
+  let { page, count, keyword } = req.query;
 
-    page = page ? parseInt(page) : 1;
-    count = count ? parseInt(count) : 5;
+  page = page ? parseInt(page) : 1;
+  count = count ? parseInt(count) : 5;
 
-    try {
-        const subjects = await Subject.findAll({
-            where: { deletedAt: null },
-            offset: count * (page - 1),
-            limit: count,
-        });
+  try {
+    const subjects = await Subject.findAll(
+      {
+        where: keyword
+          ? {
+              deletedAt: null,
+              name: {
+                [Op.like]: `%${keyword}%`,
+              },
+            }
+          : {
+              deletedAt: null,
+            },
+      }
+      // offset: count * (page - 1),
+      // limit: count,
+    );
 
-        if (!subjects) {
-            res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
-            return;
-        }
-
-        res.send(subjects);
-    } catch (error) {
-        console.error(error);
-        res.json(error);
-        next();
+    if (!subjects) {
+      res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
+      return;
     }
+
+    res.send(subjects);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+    next();
+  }
 };
 
 /**
@@ -179,34 +196,34 @@ exports.list = async (req, res, next) => {
  */
 
 exports.update = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        let existSubject;
-        existSubject = await Subject.findOne({
-            where: { id },
-        });
+  try {
+    let existSubject;
+    existSubject = await Subject.findOne({
+      where: { id },
+    });
 
-        if (!existSubject) {
-            res.status('400').json({ message: '진료과목이 존재하지 않습니다.' });
-            next();
-            return;
-        }
-
-        const subject = await Subject.update(
-            {
-                ...req.body,
-            },
-            {
-                where: { id },
-            }
-        );
-
-        res.json(subject);
-    } catch (error) {
-        res.json(error);
-        next(error);
+    if (!existSubject) {
+      res.status("400").json({ message: "진료과목이 존재하지 않습니다." });
+      next();
+      return;
     }
+
+    const subject = await Subject.update(
+      {
+        ...req.body,
+      },
+      {
+        where: { id },
+      }
+    );
+
+    res.json(subject);
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 };
 
 /**
@@ -244,21 +261,21 @@ exports.update = async (req, res, next) => {
  */
 
 exports.delete = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const subject = await Subject.findOne({ where: { id } });
+  try {
+    const subject = await Subject.findOne({ where: { id } });
 
-        const diseases = await subject.getDiseases();
-        await subject.removeDiseases(diseases);
+    const diseases = await subject.getDiseases();
+    await subject.removeDiseases(diseases);
 
-        await Subject.destroy({
-            where: { id },
-        });
+    await Subject.destroy({
+      where: { id },
+    });
 
-        res.json({ message: "진료과목이 삭제되었습니다." });
-    } catch (error) {
-        res.json(error);
-        next(error);
-    }
+    res.json({ message: "진료과목이 삭제되었습니다." });
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 };
