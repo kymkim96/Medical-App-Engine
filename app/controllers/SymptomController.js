@@ -52,8 +52,8 @@ exports.register = async (req, res, next) => {
       ...requestBody["content"],
     });
 
-    if (requestBody['partId']) {
-      await symptom.setPart(requestBody['partId']);
+    if (requestBody["partId"]) {
+      await symptom.setPart(requestBody["partId"]);
     }
 
     const resultSymptom = await Symptom.findOne({
@@ -99,7 +99,7 @@ exports.read = async (req, res, next) => {
   try {
     const symptom = await Symptom.findOne({
       where: { id, deletedAt: null },
-      include: [Part],
+      include: [Part, Disease],
     });
     res.json(symptom);
   } catch (error) {
@@ -116,7 +116,7 @@ exports.read = async (req, res, next) => {
  *     - Symptom
  *     summary: 증상 목록
  *     parameters:
- *     - nmae: keyword
+ *     - name: keyword
  *       in: query
  *       description: 검색어
  *       schema:
@@ -161,7 +161,8 @@ exports.list = async (req, res, next) => {
         name: {
           [Op.like]: `%${keyword}%`,
         },
-      }});
+      },
+    });
     const tempArray = [];
     for (let part of parts) {
       tempArray.push(part.id);
@@ -172,31 +173,31 @@ exports.list = async (req, res, next) => {
   try {
     const symptoms = await Symptom.findAll({
       where: keyword
-          ? partId
-              ? {
-                deletedAt: null,
+        ? partId
+          ? {
+              deletedAt: null,
+              name: {
+                [Op.like]: `%${keyword}%`,
+              },
+              partId: parseInt(partId),
+            }
+          : {
+              deletedAt: null,
+              [Op.or]: {
                 name: {
                   [Op.like]: `%${keyword}%`,
                 },
-                partId: parseInt(partId),
-              }
-              : {
-                deletedAt: null,
-                [Op.or]: {
-                  name: {
-                    [Op.like]: `%${keyword}%`,
-                  },
-                  partId: partIdForKeyword
-                },
-              }
-          : partId
-              ? {
-                deletedAt: null,
-                partId: parseInt(partId),
-              }
-              : {
-                deletedAt: null,
+                partId: partIdForKeyword,
               },
+            }
+        : partId
+        ? {
+            deletedAt: null,
+            partId: parseInt(partId),
+          }
+        : {
+            deletedAt: null,
+          },
       // offset: count * (page - 1),
       // limit: count,
       include: [Part, Disease],
@@ -278,9 +279,14 @@ exports.update = async (req, res, next) => {
           );
           break;
         case "partId":
-          await Symptom.update({
-            partId: requestBody[content],
-          });
+          await Symptom.update(
+            {
+              partId: requestBody[content],
+            },
+            {
+              where: { id },
+            }
+          );
           break;
       }
     }
@@ -329,9 +335,6 @@ exports.delete = async (req, res, next) => {
 
     const diseases = await symptom.getDiseases();
     await symptom.removeDisease(diseases);
-
-    const parts = await symptom.getPart();
-    await symptom.removePart(parts);
 
     await Symptom.destroy({
       where: { id },

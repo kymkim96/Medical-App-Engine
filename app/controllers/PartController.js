@@ -1,4 +1,5 @@
 require("dotenv");
+const { Op } = require("sequelize");
 const { Part, Disease, Symptom } = require("../models");
 const { validateFormRegisterPart } = require("../util/validateForm");
 
@@ -99,6 +100,11 @@ exports.read = async (req, res, next) => {
  *     - Part
  *     summary: 관련 부위 목록
  *     parameters:
+ *     - name: keyword
+ *       in: query
+ *       description: 키워드 검색
+ *       schema:
+ *         type: string
  *     - name: page
  *       in: query
  *       description: 페이지 번호
@@ -121,14 +127,21 @@ exports.read = async (req, res, next) => {
  */
 
 exports.list = async (req, res, next) => {
-  let { page, count } = req.query;
+  let { page, count, keyword } = req.query;
 
   // page = page ? parseInt(page) : 1;
   // count = count ? parseInt(count) : 5;
 
   try {
     const parts = await Part.findAll({
-      where: { deletedAt: null },
+      where: keyword ? {
+        name: {
+          [Op.like]: `%${keyword}%`,
+        },
+        deletedAt: null,
+      } : {
+        deletedAt: null,
+      },
     });
 
     if (!parts) {
