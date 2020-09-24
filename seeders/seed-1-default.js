@@ -138,41 +138,49 @@ exports.up = (queryInterface, Sequelize) => {
     queryInterface.bulkInsert("subjects", [
       {
         name: "내과",
+        code: '01',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "이비인후과",
+        code: '13',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "외과",
+        code: "04",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "가정의학과",
+        code: "23",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "정형외과",
+        code: "05",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "흉부외과",
+        code: "07",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "치과",
+        code: "49",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: "안과",
+        code: "12",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

@@ -20,6 +20,9 @@ const { validateFormRegisterSubject } = require("../util/validateForm");
  *               name:
  *                 type: string
  *                 description: 진료과목 이름
+ *               code:
+ *                 type: string
+ *                 description: 진료과목 코드
  *     responses:
  *       '200':
  *         description: OK
@@ -32,7 +35,7 @@ const { validateFormRegisterSubject } = require("../util/validateForm");
  */
 
 exports.register = async (req, res, next) => {
-  const { name } = req.body;
+  const { name, code } = req.body;
 
   try {
     if (!(await validateFormRegisterSubject(req, res))) {
@@ -42,6 +45,7 @@ exports.register = async (req, res, next) => {
 
     const subject = await Subject.create({
       name,
+      code,
     });
 
     res.json(subject);
@@ -184,6 +188,9 @@ exports.list = async (req, res, next) => {
  *               name:
  *                 type: string
  *                 description: 진료과목 이름
+ *               code:
+ *                 type: string
+ *                 description: 진료과목 코드
  *     responses:
  *       '200':
  *         description: OK
@@ -239,16 +246,6 @@ exports.update = async (req, res, next) => {
  *       description: 진료과목 id
  *       schema:
  *         type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/x-www-form-urlencoded:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: 진료과목 이름
  *     responses:
  *       '200':
  *         description: OK
