@@ -142,6 +142,7 @@ exports.list = async (req, res, next) => {
       } : {
         deletedAt: null,
       },
+      include: [Symptom, Disease]
     });
 
     if (!parts) {
@@ -262,9 +263,6 @@ exports.delete = async (req, res, next) => {
 
     const diseases = await part.getDiseases();
     await part.removeDiseases(diseases);
-
-    const symptoms = await part.getSymptoms();
-    await part.removeDiseases(symptoms);
 
     await Part.destroy({
       where: { id },
