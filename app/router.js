@@ -19,11 +19,23 @@ router.get('/', (req, res) => {
 const serviceKey = process.env.SERVICE_KEY;
 const searchText = encodeURIComponent('병적 골절을');
 
-router.get('/api', async (req, res) => {
+router.get('/api-diseases', async (req, res) => {
     try {
-        const data = await axios.get(`http://apis.data.go.kr/B551182/diseasesInfoService/getDissNameCodeList?sickType=1&medTp=2&diseasesType=SICK_NM&searchText=${searchText}&ServiceKey=${serviceKey}`);
-        console.log(data.data);
-        res.send(data.data);
+        // const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?` +
+        //     `serviceKey=${serviceKey}&pageNo=1&numOfRows=99`);
+        // console.log(data.data);
+        // res.send(data.data);
+
+        // let count = 1;
+        // while(1) {
+        //     const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?` +
+        //         `serviceKey=${serviceKey}&pageNo=${count}&numOfRows=99`);
+        //     count++
+        //     console.log(data.data.response.body.items.item);
+        //     if (count === 99999) {
+        //         break;
+        //     }
+        // }
     } catch(e) {
         console.error(e);
         return;
