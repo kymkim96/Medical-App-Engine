@@ -36,6 +36,9 @@ const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
  *                   cure:
  *                     type: string
  *                     description: 치료법
+ *                   parent_id:
+ *                     type: integer
+ *                     description: 상위 질병 id
  *               part_ids:
  *                 type: array
  *                 items:
@@ -50,7 +53,7 @@ const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
  *                 type: array
  *                 items:
  *                   type: integer
- *                   description: 증상 id 리스트
+ *                   description: 진료과목 id 리스트
  *               drug_ids:
  *                 type: array
  *                 items:
@@ -111,6 +114,10 @@ exports.register = async (req, res, next) => {
         },
         Subject,
         Drug,
+        {
+          model: Disease,
+          as: 'parent',
+        },
       ],
     });
     res.json(disease);
@@ -159,6 +166,10 @@ exports.read = async (req, res, next) => {
         },
         Subject,
         Drug,
+        {
+          model: Disease,
+          as: 'parent',
+        },
       ],
     });
     res.json(disease);
@@ -248,6 +259,10 @@ exports.list = async (req, res, next) => {
               },
               Subject,
               Drug,
+              {
+                model: Disease,
+                as: 'parent',
+              },
             ],
           })
       : symptom_ids
@@ -264,6 +279,10 @@ exports.list = async (req, res, next) => {
             },
             Subject,
             Drug,
+            {
+              model: Disease,
+              as: 'parent',
+            },
           ],
         });
 
@@ -458,6 +477,10 @@ exports.update = async (req, res, next) => {
         },
         Subject,
         Drug,
+        {
+          model: Disease,
+          as: 'parent',
+        },
       ],
     });
     res.json(disease);

@@ -17,7 +17,7 @@ db.Drug = require('./Drug')(sequelize, Sequelize);
 db.Part = require('./Part')(sequelize, Sequelize);
 db.User = require('./User')(sequelize, Sequelize);
 
-db.Disease.hasMany(db.Disease, { sourceKey: 'id', foreignKey: 'parent_id' });
+db.Disease.hasMany(db.Disease, { as: 'parent', sourceKey: 'id', foreignKey: 'parent_id' });
 
 db.Disease.belongsToMany(db.Subject, { through: 'diseases_subjects'});
 db.Subject.belongsToMany(db.Disease, { through: 'diseases_subjects'});
