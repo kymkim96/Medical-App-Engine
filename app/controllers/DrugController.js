@@ -1,5 +1,6 @@
 require("dotenv");
 const { Drug, Disease } = require("../models");
+const { Op } = require("sequelize");
 const { validateFormRegisterDrug } = require("../util/validateForm");
 
 /**
@@ -37,26 +38,26 @@ const { validateFormRegisterDrug } = require("../util/validateForm");
  */
 
 exports.register = async (req, res, next) => {
-    const { name, description, ingredients } = req.body;
+  const { name, description, ingredients } = req.body;
 
-    try {
-        if (!(await validateFormRegisterDrug(req, res))) {
-            next();
-            return;
-        }
-
-        const drug = await Drug.create({
-            name,
-            description,
-            ingredients,
-        });
-
-        res.json(drug);
-    } catch (error) {
-        console.error(error);
-        res.json(error);
-        next();
+  try {
+    if (!(await validateFormRegisterDrug(req, res))) {
+      next();
+      return;
     }
+
+    const drug = await Drug.create({
+      name,
+      description,
+      ingredients,
+    });
+
+    res.json(drug);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+    next();
+  }
 };
 
 /**
@@ -84,18 +85,18 @@ exports.register = async (req, res, next) => {
  */
 
 exports.read = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const drug = await Drug.findOne({
-            where: { id, deletedAt: null },
-            include: [Disease],
-        });
-        res.json(drug);
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
+  try {
+    const drug = await Drug.findOne({
+      where: { id, deletedAt: null },
+      include: [Disease],
+    });
+    res.json(drug);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 /**
@@ -116,6 +117,11 @@ exports.read = async (req, res, next) => {
  *       description: 페이지 로우 개수
  *       schema:
  *         type: integer
+ *     - name: keyword
+ *       in: query
+ *       description: 검색 키워드
+ *       schema:
+ *         type: string
  *     responses:
  *       '200':
  *         description: OK
@@ -128,29 +134,31 @@ exports.read = async (req, res, next) => {
  */
 
 exports.list = async (req, res, next) => {
-    let { page, count } = req.query;
+  let { keyword } = req.query;
 
-    page = page ? parseInt(page) : 1;
-    count = count ? parseInt(count) : 5;
+  try {
+    const drugs = await Drug.findAll({
+      where: keyword
+        ? {
+            name: {
+              [Op.like]: `%${keyword}%`,
+            },
+            deletedAt: null,
+          }
+        : { deletedAt: null },
+    });
 
-    try {
-        const drugs = await Drug.findAll({
-            where: { deletedAt: null },
-            offset: count * (page - 1),
-            limit: count,
-        });
-
-        if (!drugs) {
-            res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
-            return;
-        }
-
-        res.send(drugs);
-    } catch (error) {
-        console.error(error);
-        res.json(error);
-        next();
+    if (!drugs) {
+      res.status(400).send({ message: "해당 부위가 존재하지 않습니다." });
+      return;
     }
+
+    res.send(drugs);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+    next();
+  }
 };
 
 /**
@@ -194,33 +202,33 @@ exports.list = async (req, res, next) => {
  */
 
 exports.update = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const existDrug = await Drug.findOne({
-            where: { id },
-        });
+  try {
+    const existDrug = await Drug.findOne({
+      where: { id },
+    });
 
-        if (!existDrug) {
-            res.status('400').json({ message: '약학정보가 존재하지 않습니다.' });
-            next();
-            return;
-        }
-
-        const drug = await Drug.update(
-            {
-                ...req.body,
-            },
-            {
-                where: { id },
-            }
-        );
-
-        res.json(drug);
-    } catch (error) {
-        res.json(error);
-        next(error);
+    if (!existDrug) {
+      res.status("400").json({ message: "약학정보가 존재하지 않습니다." });
+      next();
+      return;
     }
+
+    const drug = await Drug.update(
+      {
+        ...req.body,
+      },
+      {
+        where: { id },
+      }
+    );
+
+    res.json(drug);
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 };
 
 /**
@@ -258,21 +266,21 @@ exports.update = async (req, res, next) => {
  */
 
 exports.delete = async (req, res, next) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const drug = await Drug.findOne({ where: { id } });
+  try {
+    const drug = await Drug.findOne({ where: { id } });
 
-        const diseases = await drug.getDiseases();
-        await drug.removeDiseases(diseases);
+    const diseases = await drug.getDiseases();
+    await drug.removeDiseases(diseases);
 
-        await Drug.destroy({
-            where: { id },
-        });
+    await Drug.destroy({
+      where: { id },
+    });
 
-        res.json({ message: "약학정보가 삭제되었습니다." });
-    } catch (error) {
-        res.json(error);
-        next(error);
-    }
+    res.json({ message: "약학정보가 삭제되었습니다." });
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 };
