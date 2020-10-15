@@ -170,6 +170,10 @@ exports.read = async (req, res, next) => {
           model: Disease,
           as: 'parent',
         },
+        {
+          model: Disease,
+          as: 'children',
+        },
       ],
     });
     res.json(disease);
