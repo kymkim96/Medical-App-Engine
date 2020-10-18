@@ -7,19 +7,16 @@
  <code>.env.sample</code> 파일을 복제해 <code>.env</code> 파일을 생성합니다.   
  <code>PORT</code> : API 서버가 동작하는 포트 번호입니다.   
  <code>COOKIE_SECRET</code> : 클라이언트와 주고 받는 쿠키의 서명입니다.   
+ <code>username</code> : mysql 데이터베이스 계정입니다. 기본은 root로 지정해주세요.   
+  <code>password</code> : mysql 데이터베이스 계정 비밀번호를 입력해주세요.   
+  <code>database</code> : mysql 데이터베이스 이름을 입력해주세요.
  ### NPM 패키지 설치
  <pre>npm i</pre>
- ### <code>config.json</code> 파일 생성
- <code>project_root/config/config.json.sample</code> 파일을 복제해 해당 config 폴더 안에서<code>config.json</code> 파일을 생성합니다.   
- 
- <code>development</code> 항목에서 해당 내용을 로컬 호스트에 맞게 수정합니다.   
+ ### <code>config.js</code> 설정
  <code>username</code> : mysql 데이터베이스 계정입니다. 기본은 root로 지정해주세요.   
  <code>password</code> : mysql 데이터베이스 계정 비밀번호를 입력해주세요.   
  <code>database</code> : mysql 데이터베이스 이름을 입력해주세요.      
 ## 데이터베이스 설정
- ### Model 생성
- <code>project_root/sped/models</code> 폴더에 스키마 작성해주세요.   
- 위 폴더에 <code>index.js</code> 는 sequelize setting 파일입니다. 
  ### Model 마이그레이션
  <code>npm run migrate</code> : 최신 마이그레이션을 실행합니다. 데이터베이스를 수정하려면 이 커맨드를 먼저 실행합니다.   
  <code>npm run migrate:rollback</code> : 최신 마이그레이션을 롤백합니다. 위 커맨드를 실행한 뒤 
