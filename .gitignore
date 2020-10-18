@@ -1,8 +1,9 @@
 #git
 .idea
 
-#env
-.env
-
 #packages
 node_modules
+
+#environment & configuration
+.env
+*.log
