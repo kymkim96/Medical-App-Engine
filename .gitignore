@@ -6,6 +6,4 @@ node_modules
 
 #environment & configuration
 .env
-config/config.json
-./migrations
-./seeders
+*.log

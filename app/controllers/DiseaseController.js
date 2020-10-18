@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const { Disease, Symptom, Part, Subject, Drug } = require("../models");
 const { validateFormRegisterDisease } = require("../util/validateForm");
 const { fetchDiseasesOfSymptom } = require("../util/functionDisease");
+const logger = require('../logger/logger')
 
 /**
  * @swagger
@@ -122,8 +123,7 @@ exports.register = async (req, res, next) => {
     });
     res.json(disease);
   } catch (error) {
-    console.error(error);
-    res.json(error);
+    logger.error(error);
     next();
   }
 };

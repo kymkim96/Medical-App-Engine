@@ -1,4 +1,4 @@
-const sequelizePaginate = require('sequelize-paginate');
+const sequelizePaginate = require("sequelize-paginate");
 
 module.exports = (sequelize, DataTypes) => {
   const diseases = sequelize.define(
@@ -24,6 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       timestamps: true,
       paranoid: true,
+      charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   sequelizePaginate.paginate(diseases);

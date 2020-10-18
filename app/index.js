@@ -1,15 +1,15 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
-const session = require('express-session');
 require('dotenv').config();
 const { sequelize } = require('./models');
-const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const spec = require('../swaggerUI');
 const cors = require('cors');
 const passport = require('passport');
 const passportConfig = require('./auth');
+const helmet = require('helmet');
+const hpp = require('hpp');
 
 const router = require('./router');
 
@@ -21,14 +21,23 @@ app.set('port', process.env.PORT || 8010);
 
 app.use('/swagger', swaggerUI.serve, swaggerUI.setup(spec));
 
-// app.use('/file', express.static(path.join(__dirname, 'uploads')));
+/**
+ * helmet, hpp : 취약점 방어
+ */
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === "production") {
+    app.use(morgan("combined"));
+    app.use(helmet());
+    app.use(hpp());
+} else {
+    app.use(morgan('dev'));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({
-    origin: '*',
+    origin: ['http://localhost:3000', 'http://localhost:3010'],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-type', 'Authorization', 'Accept'],
 }));
