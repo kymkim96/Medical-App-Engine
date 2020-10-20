@@ -9,6 +9,7 @@ const PartController = require('./controllers/PartController');
 const SubjectController = require('./controllers/SubjectController');
 const AuthController = require('./controllers/AuthController');
 const UserController = require('./controllers/UserController');
+const ExternController = require('./controllers/ExternController');
 
 const withAdmin = passport.authenticate('jwt', { session: false });
 
@@ -79,5 +80,8 @@ router.get('/subjects', SubjectController.list);
 router.get('/subjects/:id', SubjectController.read);
 router.patch('/subjects/:id', withAdmin, SubjectController.update);
 router.delete('/subjects/:id', withAdmin, SubjectController.delete);
+
+router.post('/hospitals', ExternController.hospital);
+router.post('/pharmacies', ExternController.pharmacy);
 
 module.exports = router;
