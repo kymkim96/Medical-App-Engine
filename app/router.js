@@ -83,5 +83,6 @@ router.delete('/subjects/:id', withAdmin, SubjectController.delete);
 
 router.post('/hospitals', ExternController.hospital);
 router.post('/pharmacies', ExternController.pharmacy);
+router.post('/pharmacies-detail', ExternController.pharmacy_detail);
 
 module.exports = router;

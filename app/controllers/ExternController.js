@@ -46,3 +46,28 @@ exports.pharmacy = async (request, response) => {
         console.log(error)
     }
 }
+
+exports.pharmacy_detail = async (request, response) => {
+    const { hpid } = request.body;
+
+    try {
+        const url =
+            `http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyBassInfoInqire?serviceKey=${process.env.PUBLIC_DATA_CLIENT_ID}&` +
+            `HPID=${hpid}`
+        const {
+            data: {
+                response: {
+                    body: {
+                        items: {
+                            item
+                        }
+                    }
+                }
+            }
+        } = await axios.get(url);
+
+        response.json(item);
+    } catch (error) {
+        console.log(error)
+    }
+}
