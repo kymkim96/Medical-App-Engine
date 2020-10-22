@@ -42,6 +42,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3010",
       "http://medical-front-wheredowego.s3-website.ap-northeast-2.amazonaws.com",
+      "http://medical-admin-wheredowego.s3-website.ap-northeast-2.amazonaws.com",
     ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-type", "Authorization", "Accept"],
