@@ -84,6 +84,7 @@ exports.register = async (req, res, next) => {
     let exDisease;
     exDisease = await Disease.create({
       ...requestBody["content"],
+      parent_id: requestBody["parent_id"] ? requestBody["parent_id"] : null,
     });
 
     for (let content in requestBody) {
@@ -428,7 +429,7 @@ exports.update = async (req, res, next) => {
             }
           }
           break;
-        case "subect_ids":
+        case "subject_ids":
           // 기존 id 리스트
           const id_list_subject = [];
           const subjects = await exDisease.getSubjects();
