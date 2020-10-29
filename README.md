@@ -17,6 +17,9 @@
  <code>password</code> : mysql 데이터베이스 계정 비밀번호를 입력해주세요.   
  <code>database</code> : mysql 데이터베이스 이름을 입력해주세요.      
 ## 데이터베이스 설정
+### 데이터베이스 생성
+1. <code>npm i -g sequelize-cli</code> 를 실행합니다.
+2. 설치가 완료된 후에는, <code>sequelize db:create</code> 를 입력합니다.   
  ### Model 마이그레이션
  <code>npm run migrate</code> : 최신 마이그레이션을 실행합니다. 데이터베이스를 수정하려면 이 커맨드를 먼저 실행합니다.   
  <code>npm run migrate:rollback</code> : 최신 마이그레이션을 롤백합니다. 위 커맨드를 실행한 뒤 
