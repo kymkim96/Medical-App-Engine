@@ -41,7 +41,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:3010",
-      "http://medical-front-wheredowego.s3-website.ap-northeast-2.amazonaws.com",
+      "http://medical-admin-wheredowego.s3-website.ap-northeast-2.amazonaws.com",
       "http://wheretogohos.site",
     ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
