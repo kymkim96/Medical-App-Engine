@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const passport = require('passport');
 const DiseaseController = require('./controllers/DiseaseController');
 const SymptomController = require('./controllers/SymptomController');
@@ -17,31 +16,7 @@ router.get('/', (req, res) => {
     res.json({ message: 'Home' });
 });
 
-const serviceKey = process.env.SERVICE_KEY;
-const searchText = encodeURIComponent('병적 골절을');
-
-router.get('/api-diseases', async (req, res) => {
-    try {
-        // const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?` +
-        //     `serviceKey=${serviceKey}&pageNo=1&numOfRows=99`);
-        // console.log(data.data);
-        // res.send(data.data);
-
-        // let count = 1;
-        // while(1) {
-        //     const data = await axios.get(`http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList?` +
-        //         `serviceKey=${serviceKey}&pageNo=${count}&numOfRows=99`);
-        //     count++
-        //     console.log(data.data.response.body.items.item);
-        //     if (count === 99999) {
-        //         break;
-        //     }
-        // }
-    } catch(e) {
-        console.error(e);
-        return;
-    }
-});
+router.get('/api-drugs', ExternController.drugs_data);
 
 router.post('/users', AuthController.register);
 router.post('/sign-in', AuthController.signIn);
